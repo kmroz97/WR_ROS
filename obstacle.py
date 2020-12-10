@@ -8,7 +8,8 @@ sys.path.append('scripts')
 from movement import Movement
 from definitions import Direction, State
 
-
+#Klasa, która dziedziczy po klasie Movement i umożliwia, oprócz skręcania, jechania i pobierania nowego celu, także reagowanie na ściany oraz ich omijanie, 
+#używając do tego regulatora PID 
 class Obstacle(Movement, object):
     def __init__(self, angular_speed, linear_speed):
         Movement.__init__(self, angular_speed, linear_speed)
@@ -31,10 +32,10 @@ class Obstacle(Movement, object):
 
         self.set_PID_params()
 
-    def set_obstacle_location(self, obstacle_location):
+    def set_obstacle_location(self, obstacle_location): 
         self.obstacle_location = obstacle_location
 
-    def invert_obstacle_location(self):
+    def invert_obstacle_location(self): 
         self.obstacle_location = Direction.LEFT if self.obstacle_location == Direction.RIGHT else Direction.RIGHT
 
     def invert_movement_direction(self, scan_ranges):
@@ -44,7 +45,7 @@ class Obstacle(Movement, object):
             return State.FOLLOW_OBSTACLE
         return State.INVERT_MOVEMENT_DIRECTION
 
-    def detect_obstacle(self, scan_ranges):
+    def detect_obstacle(self, scan_ranges): #wykrywanie przeszkody dzięki czujnikowi odległości
         if scan_ranges[self.left_distance_sensor] < self.distance_threshold:
             obstacle_location = Direction.LEFT
         elif scan_ranges[self.forward_distance_sensor] < self.distance_threshold:
@@ -83,12 +84,14 @@ class Obstacle(Movement, object):
             distance_from_wall - self.previous_distance_to_obstacle) / self.wall_distance_threshold
         return self.relative_absolute_previous_distacne_from_obsctacle
 
+	#regular PID do prędkości liniowej przy ruszaniu się wprost, kontroluje, czy nie trzeba zwolnić, gdy jesteśmy zbyt blisko przeszkody
+	#zakłada jednak minimalną prędkość, poniżej której w żadnym wypadku nie spadnie prędkość robota
     def set_PID_linear_velocity(self, relative_distance_difference, relative_absolute_dynamic_difference):
         self.new_vel.linear.x = max(self.min_linear_speed,
                                     self.linear_speed * (1 - min(abs(relative_distance_difference) * self.K_linear, 1)
                                                          - min(self.D_linear * relative_absolute_dynamic_difference,
                                                                1)))
-
+	#regulator PID do prędkości kątowej, przy skrętach - omijaniu przeszkód
     def set_PID_angular_velocity(self, angular_velocity_sign, relative_distance_difference,
                                  relative_absolute_dynamic_difference):
         new_angular_speed = angular_velocity_sign * self.angular_speed * (

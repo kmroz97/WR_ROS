@@ -13,7 +13,7 @@ class Movement(object): #klasa, której obiekt służy do sterowania żółwiem
 	def __init__(self, angular_speed, linear_speed, linear_eps=0.1, angle_eps=0.1, linear_distance_threshold=0.1, angle_distance_threshold=0.1): #konstruktor ustawiający parametry
 		self.angular_speed = angular_speed
 		self.linear_speed = linear_speed
-		self.new_vel = Twist()
+		self.new_vel = Twist() #przekazywanie prędkości do publishera
 		self.direction_to_target = None 
 		self.angle_distance = 0
 		self.previous_angle_distance = 100
@@ -79,10 +79,11 @@ class Movement(object): #klasa, której obiekt służy do sterowania żółwiem
 
 	def rotate_to_target(self, diff_x, diff_y, current_angle): #metoda, która jest wywoływana w momencie, gdy znajdziemy się w stanie obracania
 		self.calculate_angle_distance(diff_x, diff_y, current_angle) #wywołania sprawdzenia o ile trzeba się obrócić
-
+		
+		#poniżej sprawdzamy, czy osiągnęliśmy już odpowiednie ustawienie, poprzez sprawdzenie, czy przypadkiem nie zwiększa już się odległość kątowa
 		if abs(self.angle_distance) > abs(self.previous_angle_distance) + self.angle_eps or abs(
 				self.angle_distance) < self.angle_threshold:
-			self.set_stop_speed()
+			self.set_stop_speed() #jeśli tak się stanie, to zatrzymujemy żółwia i zmieniamy jego stan na ruch liniowy
 			self.set_previous_angle_distance(100)
 			return State.MOVE_TO_TARGET
 
@@ -99,10 +100,11 @@ class Movement(object): #klasa, której obiekt służy do sterowania żółwiem
 		self.set_linear_velocity()
 		self.linear_distance = self.calculate_distance(diff_x, diff_y)
 
+		#poniżej sprawdzamy, czy osiągnęliśmy już dotarliśmy do celu, sprawdzając, czy różnica odległości od celu się nie zaczęła zwiększać
 		if self.linear_distance > self.previous_linear_distance + self.linear_eps or abs(
 				self.linear_distance) < self.linear_threshold:
 
-			self.set_stop_speed()
+			self.set_stop_speed() #jeśli tak to zatrzymujemy żółwia i ustawiamy go w stanie pobierania nowego celu z kolejki
 			self.set_previous_linear_distance(100)
 
 			return State.GET_NEW_TARGET
