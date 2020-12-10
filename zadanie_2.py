@@ -13,15 +13,15 @@ from definitions import State, Direction
 
 from movement import Movement
 
-movement = Movement(angular_speed=0.2, linear_speed=0.5, linear_eps=0, angle_eps=0.05 , linear_distance_threshold=0.1, angle_distance_threshold =0.05)
+movement = Movement(angular_speed=0.2, linear_speed=0.5, linear_eps=0, angle_eps=0.05 , linear_distance_threshold=0.1, angle_distance_threshold =0.05) #wywołanie obiektu klasy movement
 positions = [[10, 1], [4, 2], [3, 6], [2, 2], [7, 5]]
 state = State.ROTATE_TO_TARGET
 
-def set_new_target_point():
+def set_new_target_point(): #funckja ustawiająca nowy punkt z kolejki, do którego ma dotrzeć żółw
     global target_point
     target_point = positions.pop(0)
 
-def turtlesim_pose_callback(pose):
+def turtlesim_pose_callback(pose): #funkcja wywoływana przez subskrybera, który nasłuchuje pozycję żółwia
     global state
 
     diff_x = target_point[0] - pose.x
