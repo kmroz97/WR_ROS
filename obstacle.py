@@ -16,9 +16,9 @@ class Obstacle(Movement, object):
         self.left_distance_to_obstacle_sensor = 90
         self.right_distance_to_obstacle_sensor = 270
 
-        self.left_distance_sensor = 45
-        self.forward_distance_sensor = 0
-        self.right_distance_sensor = 315
+        self.left_distance_sensor = 45 #ustawienie na 45 stopni z lewej
+        self.forward_distance_sensor = 0 #wykrycie przeszkody na wprost
+        self.right_distance_sensor = 315 #ustawienie na 45 stopni z prawej (360-45)
 
         self.forward_distance_threshold = 0.4
         self.distance_threshold = 0.35
@@ -45,7 +45,7 @@ class Obstacle(Movement, object):
             return State.FOLLOW_OBSTACLE
         return State.INVERT_MOVEMENT_DIRECTION
 
-    def detect_obstacle(self, scan_ranges): #wykrywanie przeszkody dzięki czujnikowi odległości
+    def detect_obstacle(self, scan_ranges): #wykrywanie przeszkody dzięki czujnikowi odległości, oraz sprawdzanie po której są one stronie
         if scan_ranges[self.left_distance_sensor] < self.distance_threshold:
             obstacle_location = Direction.LEFT
         elif scan_ranges[self.forward_distance_sensor] < self.distance_threshold:
@@ -59,7 +59,7 @@ class Obstacle(Movement, object):
             obstacle_location = None
         return obstacle_location
 
-    def turn_to_obstacle(self):
+    def turn_to_obstacle(self): #obrót w przeciwną stronę, niż się znajduje przeszkoda 
         if (self.obstacle_location == Direction.LEFT):
             self.set_rotate_right_speed()
         elif (self.obstacle_location == Direction.RIGHT):
@@ -114,9 +114,9 @@ class Obstacle(Movement, object):
         self.max_angular_speed = max_angular_speed
         self.K_angular_extra_factor = K_angular_extra_factor
 
-    def go_around_obstacle(self, scan_ranges):
+    def go_around_obstacle(self, scan_ranges): #funkcja służąca do okrążania labiryntu
         new_obstacle = self.detect_obstacle(scan_ranges)
-        if new_obstacle:
+        if new_obstacle: #jeśli wykryjemy przeszkodę, to ją wymijamy
             self.turn_to_obstacle()
         else:
             self.set_distance_to_obstacle(scan_ranges)

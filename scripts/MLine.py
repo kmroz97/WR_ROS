@@ -11,7 +11,7 @@ class MLine(object):
         self.m_line = {'A': None, 'B': None, 'C': None}
         pass
 
-    def calculate_m_line(self, target_x, target_y):
+    def calculate_m_line(self, target_x, target_y): #obliczenie równania prostej MLine
         global m_line
         odom = rospy.wait_for_message('/odom', Odometry)
         # print('pose')
@@ -45,13 +45,13 @@ class MLine(object):
 
         # print(self.m_line)
 
-    def calculate_distance_from_line(self, x, y):
+    def calculate_distance_from_line(self, x, y): #odległość punktu od prostej
         A = self.m_line['A']
         B = self.m_line['B']
         C = self.m_line['C']
         return abs(A * x + B * y + C) / math.sqrt(math.pow(A, 2) + math.pow(B, 2))
 
-    def calculate_distance_from_line_start(self, point_x, point_y):
+    def calculate_distance_from_line_start(self, point_x, point_y): #odległość od punktu startowego
         diff_x =self.start_x- point_x
         diff_y =self.start_y- point_y
         return math.sqrt(math.pow(diff_x,2)+ math.pow(diff_y,2))

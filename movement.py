@@ -100,7 +100,7 @@ class Movement(object): #klasa, której obiekt służy do sterowania żółwiem
 		self.set_linear_velocity()
 		self.linear_distance = self.calculate_distance(diff_x, diff_y)
 
-		#poniżej sprawdzamy, czy osiągnęliśmy już dotarliśmy do celu, sprawdzając, czy różnica odległości od celu się nie zaczęła zwiększać
+		#poniżej sprawdzamy, czy osiągnęliśmy już dotarliśmy do celu, sprawdzając, czy różnica odległości od celu się nie zaczęła zwiększać, lub czy osiągnęła wartości pomijalnie małe
 		if self.linear_distance > self.previous_linear_distance + self.linear_eps or abs(
 				self.linear_distance) < self.linear_threshold:
 
